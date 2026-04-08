@@ -6,6 +6,7 @@
 #include <Player.h>
 #include <DoubleBuffer.h>
 #include <Map.h>
+#include <omp.h>
 
 /**
  * @brief The Raycaster class is responsible for casting rays and rendering the scene in a 3D environment.

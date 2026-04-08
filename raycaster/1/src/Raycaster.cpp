@@ -26,7 +26,8 @@ void Raycaster::castFloorCeiling()
     Vector<double> rayDir0 = {0, 0}, rayDir1 = {0, 0};
     // Vertical position of the camera.
     double posZ = 0.5 * screenHeight;
-
+    
+    #pragma omp parallel for num_threads(omp_get_num_procs())
     for (int y = screenHeight / 2; y < screenHeight; y++)
     {
         // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
@@ -79,6 +80,7 @@ void Raycaster::castFloorCeiling()
 
 void Raycaster::castWalls()
 {
+    #pragma omp parallel for num_threads(omp_get_num_procs())
     for (int x = 0; x < screenWidth; x++)
     {
         // calculate ray position and direction
@@ -216,6 +218,7 @@ void Raycaster::castSprites()
     sortSprites();
 
     // after sorting the sprites, do the projection and draw them
+    #pragma omp parallel for num_threads(omp_get_num_procs())
     for (int i = 0; i < numSprites; i++)
     {
         Sprite sprite = sprites[spriteOrder[i]];
