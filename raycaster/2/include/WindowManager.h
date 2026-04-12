@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <mutex>
 #include <vector>
 #include <string>
 
@@ -41,12 +42,12 @@ public:
     /**
      * @brief Updates the window display with the back buffer from the double buffer.
      */
-    void updateDisplay();
+    void updateDisplay(std::mutex *display_mutex);
 
     /**
      * @brief Updates the internal key state with the user input.
      */
-    void updateInput();
+    void updateInput(std::mutex *input_mutex);
 
     static unsigned int const KEY_UP = (1 << 0);    // Bit mask for the up key (arrow).
     static unsigned int const KEY_DOWN = (1 << 1);  // Bit mask for the down key (arrow).

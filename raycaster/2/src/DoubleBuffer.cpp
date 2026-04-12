@@ -27,7 +27,8 @@ void DoubleBuffer::drawPixel(int x, int y, unsigned int color)
     frontBuffer[x + y * width] = color;
 }
 
-void DoubleBuffer::swap()
+void DoubleBuffer::swap(std::mutex *display_mutex)
 {
+    std::lock_guard<std::mutex> lock(*display_mutex);
     frontBuffer.swap(backBuffer);
 }

@@ -59,20 +59,24 @@ WindowManager::~WindowManager()
 
 unsigned int WindowManager::getKeysPressed() { return keysPressed; }
 
-void WindowManager::updateDisplay()
+void WindowManager::updateDisplay(std::mutex *display_mutex)
 {
-    const std::vector<int> &backBuffer = doubleBuffer.getBackBuffer();
-    std::copy(backBuffer.begin(), backBuffer.end(), imgBuffer);
+    {
+      std::lock_guard<std::mutex> lock(*display_mutex);
+      const std::vector<int> &backBuffer = doubleBuffer.getBackBuffer();
+      std::copy(backBuffer.begin(), backBuffer.end(), imgBuffer);
+    }
 
     XPutImage(display, window, gc, img, 0, 0, 0, 0, width, height);
 }
 
-void WindowManager::updateInput()
+void WindowManager::updateInput(std::mutex *input_mutex)
 {
     XEvent e;
     while (XPending(display))
     {
         XNextEvent(display, &e);
+        std::lock_guard<std::mutex> lock(*input_mutex);
         switch (e.type)
         {
         case KeyPress:

@@ -2,6 +2,7 @@
 #define DOUBLEBUFFER_H
 
 #include <vector>
+#include <mutex>
 
 #include <Texture.h>
 
@@ -69,7 +70,7 @@ public:
     /**
      * @brief Swaps the front and back buffers.
      */
-    void swap();
+    void swap(std::mutex *display_buffer);
 
 private:
     int width;

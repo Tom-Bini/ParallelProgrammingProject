@@ -1,6 +1,10 @@
 #include <chrono>
+#include <cstdio>
 #include <iostream>
 #include <map>
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include <memory>
 
 #include <Average.h>
@@ -12,6 +16,11 @@
 #include <UDPSender.h>
 #include <DoubleBuffer.h>
 #include <util.h>
+
+std::mutex display_mutex;
+std::mutex input_mutex;
+std::thread display_thread;
+std::atomic<bool> running(true);
 
 struct ProgramArguments
 {
@@ -66,13 +75,20 @@ int main(int argc, char *argv[])
 
     Average fpsCounter(1.0);
 
+    display_thread = std::thread([&windowManager] () {
+      while (running) {
+          windowManager.updateDisplay(&display_mutex);
+          windowManager.updateInput(&input_mutex);
+      }
+    });
+
     while (true)
     {
         raycaster.castFloorCeiling();
         raycaster.castWalls();
         raycaster.castSprites();
 
-        doubleBuffer.swap();
+        doubleBuffer.swap(&display_mutex);
 
         oldTime = time;
         time = std::chrono::system_clock::now();
@@ -82,10 +98,11 @@ int main(int argc, char *argv[])
         fpsCounter.update(1.0 / frameTime);
         std::cout << "\r" << std::to_string(int(fpsCounter.get())) << " FPS" << std::flush;
 
-        windowManager.updateDisplay();
-        windowManager.updateInput();
-
-        unsigned int keys = windowManager.getKeysPressed();
+        unsigned int keys;
+        {
+            std::lock_guard<std::mutex> lock(input_mutex);
+            keys = windowManager.getKeysPressed();
+        }
         if (keys & WindowManager::KEY_UP)
             player.move(frameTime);
         if (keys & WindowManager::KEY_DOWN)
@@ -94,8 +111,10 @@ int main(int argc, char *argv[])
             player.turn(-frameTime);
         if (keys & WindowManager::KEY_LEFT)
             player.turn(frameTime);
-        if (keys & WindowManager::KEY_ESC)
+        if (keys & WindowManager::KEY_ESC) {
+            running = false;
             break;
+        }
 
         // Send position to other players
         for (auto &udpSender : udpSenders)
@@ -117,4 +136,5 @@ int main(int argc, char *argv[])
             map.movePlayer(index, data.position.x(), data.position.y());
         }
     }
+    display_thread.join();
 }
