@@ -6,6 +6,7 @@
 #include <mutex>
 #include <atomic>
 #include <memory>
+#include <csignal>    // to handle SIGINT
 
 #include <Average.h>
 #include <Player.h>
@@ -48,6 +49,10 @@ ProgramArguments parseArgs(int argc, char *argv[])
     return args;
 }
 
+void signalHandler(int) {     // signal handler to join the display_thread when we Ctrl-c  
+    running = false;          // we don't exit immediately
+    }
+
 int main(int argc, char *argv[])
 {
     ProgramArguments args = parseArgs(argc, argv);
@@ -75,20 +80,24 @@ int main(int argc, char *argv[])
 
     Average fpsCounter(1.0);
 
-    display_thread = std::thread([&windowManager] () {
+    if (signal(SIGINT, signalHandler) == SIG_ERR) {     // Install the signal handler
+        std::cerr << "Signal error" << std::endl;
+    }
+
+    display_thread = std::thread([&windowManager] () {    // thread that manage the display and keys
       while (running) {
           windowManager.updateDisplay(&display_mutex);
           windowManager.updateInput(&input_mutex);
       }
     });
 
-    while (true)
+    while (running)
     {
         raycaster.castFloorCeiling();
         raycaster.castWalls();
         raycaster.castSprites();
 
-        doubleBuffer.swap(&display_mutex);
+        doubleBuffer.swap(&display_mutex);                // mutex needed because updateDisplay may be using the backBuffer
 
         oldTime = time;
         time = std::chrono::system_clock::now();
@@ -100,8 +109,8 @@ int main(int argc, char *argv[])
 
         unsigned int keys;
         {
-            std::lock_guard<std::mutex> lock(input_mutex);
-            keys = windowManager.getKeysPressed();
+            std::lock_guard<std::mutex> lock(input_mutex);  // mutex needed because display_thread can update the key
+            keys = windowManager.getKeysPressed();          // at the same time
         }
         if (keys & WindowManager::KEY_UP)
             player.move(frameTime);
