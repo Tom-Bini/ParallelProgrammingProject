@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <mutex>
 
 #include <Raycaster.h>
 
@@ -198,9 +199,13 @@ void Raycaster::castWalls()
     }
 }
 
-void Raycaster::castSprites()
+void Raycaster::castSprites(std::mutex *sprites_mutex)
 {
-    std::vector<Sprite> sprites = map.getSprites();
+    std::vector<Sprite> sprites;
+    {
+        std::lock_guard<std::mutex> lock(*sprites_mutex);
+        sprites = map.getSprites();
+    }
 
     int screenWidth = doubleBuffer.getWidth();
     int screenHeight = doubleBuffer.getHeight();

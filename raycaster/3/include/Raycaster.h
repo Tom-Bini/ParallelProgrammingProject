@@ -1,6 +1,7 @@
 #ifndef RAYCASTER_H
 #define RAYCASTER_H
 
+#include <mutex>
 #include <vector>
 
 #include <Player.h>
@@ -34,7 +35,7 @@ public:
     /**
      * @brief Casts rays to render the sprites in the scene.
      */
-    void castSprites();
+    void castSprites(std::mutex *sprites_mutex);
 
 private:
     Player &player;               // The reference to the Player object.

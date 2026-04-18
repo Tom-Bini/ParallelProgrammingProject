@@ -2,6 +2,11 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <ostream>
+#include <thread>
+#include <atomic>
+#include <csignal>    // to handle SIGINT
 
 #include <Average.h>
 #include <Player.h>
@@ -12,6 +17,10 @@
 #include <UDPSender.h>
 #include <DoubleBuffer.h>
 #include <util.h>
+
+std::thread playersPosition;
+std::atomic<bool> running(true);
+std::mutex sprites_mutex;
 
 struct ProgramArguments
 {
@@ -37,6 +46,10 @@ ProgramArguments parseArgs(int argc, char *argv[])
     args.screenHeight = std::stoi(argv[2]);
     args.ipsPath = argc == 4 ? argv[3] : "";
     return args;
+}
+
+void signalHandler(int) {     // signal handler to join the display_thread when we Ctrl-c  
+    running = false;          // we don't exit immediately
 }
 
 int main(int argc, char *argv[])
@@ -66,55 +79,67 @@ int main(int argc, char *argv[])
 
     Average fpsCounter(1.0);
 
-    while (true)
-    {
-        raycaster.castFloorCeiling();
-        raycaster.castWalls();
-        raycaster.castSprites();
+    if (signal(SIGINT, signalHandler) == SIG_ERR) {     // Install the signal handler
+        std::cerr << "Signal error" << std::endl;
+    }
 
-        doubleBuffer.swap();
-
-        oldTime = time;
-        time = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed = time - oldTime;
-        double frameTime = elapsed.count();
-
-        fpsCounter.update(1.0 / frameTime);
-        std::cout << "\r" << std::to_string(int(fpsCounter.get())) << " FPS" << std::flush;
-
-        windowManager.updateDisplay();
-        windowManager.updateInput();
-
-        unsigned int keys = windowManager.getKeysPressed();
-        if (keys & WindowManager::KEY_UP)
-            player.move(frameTime);
-        if (keys & WindowManager::KEY_DOWN)
-            player.move(-frameTime);
-        if (keys & WindowManager::KEY_RIGHT)
-            player.turn(-frameTime);
-        if (keys & WindowManager::KEY_LEFT)
-            player.turn(frameTime);
-        if (keys & WindowManager::KEY_ESC)
-            break;
-
-        // Send position to other players
-        for (auto &udpSender : udpSenders)
-            udpSender->send(player.posX(), player.posY());
-
-        // Receive other players' positions and update them
-        for (size_t i = 0; i < nbPlayers; i++)
-        {
+    // Receive other players' positions and update them
+    playersPosition = std::thread([nbPlayers, &udpReceiver, &playersIndexes, &nextPlayerIndex, &map]() {
+      while (running) {
+          for (size_t i = 0; i < nbPlayers; i++) {
             UDPData data = udpReceiver.receive();
             if (!data.valid)
-                break;
-            // Update the player's index if it is the first time we receive data from them
-            if (playersIndexes.find(data.sender) == playersIndexes.end())
-            {
-                playersIndexes[data.sender] = nextPlayerIndex++;
-                nextPlayerIndex %= nbPlayers;
+              break;
+            // Update the player's index if it is the first time we receive data
+            // from them
+            if (playersIndexes.find(data.sender) == playersIndexes.end()) {
+              playersIndexes[data.sender] = nextPlayerIndex++;
+              nextPlayerIndex %= nbPlayers;
             }
             int index = playersIndexes[data.sender];
+            std::lock_guard<std::mutex> lock(sprites_mutex);
             map.movePlayer(index, data.position.x(), data.position.y());
-        }
+          }
+      }
+    });
+
+    while (running) {
+      raycaster.castFloorCeiling();
+      raycaster.castWalls();
+      raycaster.castSprites(&sprites_mutex);
+
+      doubleBuffer.swap();
+
+      oldTime = time;
+      time = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed = time - oldTime;
+      double frameTime = elapsed.count();
+
+      fpsCounter.update(1.0 / frameTime);
+      std::cout << "\r" << std::to_string(int(fpsCounter.get())) << " FPS"
+                << std::flush;
+
+      windowManager.updateDisplay();
+      windowManager.updateInput();
+
+      unsigned int keys = windowManager.getKeysPressed();
+      if (keys & WindowManager::KEY_UP)
+        player.move(frameTime);
+      if (keys & WindowManager::KEY_DOWN)
+        player.move(-frameTime);
+      if (keys & WindowManager::KEY_RIGHT)
+        player.turn(-frameTime);
+      if (keys & WindowManager::KEY_LEFT)
+        player.turn(frameTime);
+      if (keys & WindowManager::KEY_ESC) {
+        running = false;
+        break;
+      }
+
+      // Send position to other players
+      for (auto &udpSender : udpSenders)
+        udpSender->send(player.posX(), player.posY());
     }
+
+    playersPosition.join();
 }

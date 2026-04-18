@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <UDPReceiver.h>
@@ -32,7 +33,7 @@ UDPReceiver::~UDPReceiver()
 UDPData UDPReceiver::receive()
 {
     socklen_t len = sizeof(addr);
-    int read = recvfrom(sockfd, buffer, bufferSize, MSG_DONTWAIT, (sockaddr *)&addr, &len);
+    int read = recvfrom(sockfd, buffer, bufferSize, MSG_WAITALL, (sockaddr *)&addr, &len);
 
     if (read != bufferSize)
         return {false, "", {0, 0}};
