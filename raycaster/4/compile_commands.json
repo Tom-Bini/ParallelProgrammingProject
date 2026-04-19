@@ -1,0 +1,236 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Average.o",
+      "src/Average.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Average.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Average.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/DoubleBuffer.o",
+      "src/DoubleBuffer.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/DoubleBuffer.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/DoubleBuffer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/main.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Map.o",
+      "src/Map.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Map.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Map.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Player.o",
+      "src/Player.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Player.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Player.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Raycaster.o",
+      "src/Raycaster.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Raycaster.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Raycaster.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Sprite.o",
+      "src/Sprite.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Sprite.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Sprite.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Texture.o",
+      "src/Texture.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Texture.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Texture.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/UDPReceiver.o",
+      "src/UDPReceiver.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/UDPReceiver.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/UDPReceiver.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/UDPSender.o",
+      "src/UDPSender.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/UDPSender.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/UDPSender.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/util.o",
+      "src/util.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/util.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/util.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/Vector.o",
+      "src/Vector.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/Vector.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/Vector.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-Iinclude",
+      "-Wall",
+      "-W",
+      "-O3",
+      "-fopenmp",
+      "-c",
+      "-o",
+      "build/WindowManager.o",
+      "src/WindowManager.cpp"
+    ],
+    "directory": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4",
+    "file": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/src/WindowManager.cpp",
+    "output": "/home/dam/Documents/unif/parallel_programming/ParallelProgrammingProject/raycaster/4/build/WindowManager.o"
+  }
+]

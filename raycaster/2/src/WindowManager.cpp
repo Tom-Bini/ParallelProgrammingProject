@@ -1,7 +1,6 @@
 #include <WindowManager.h>
 #include <stdexcept>
 #include <cstring>
-#include <iostream>
 
 WindowManager::WindowManager(DoubleBuffer &doubleBuffer) : doubleBuffer(doubleBuffer), width(doubleBuffer.getWidth()), height(doubleBuffer.getHeight()), keysPressed(0)
 {

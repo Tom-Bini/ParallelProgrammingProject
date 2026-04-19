@@ -1,7 +1,6 @@
 #include <WindowManager.h>
 #include <stdexcept>
 #include <cstring>
-#include <iostream>
 
 WindowManager::WindowManager(DoubleBuffer &doubleBuffer) : doubleBuffer(doubleBuffer), width(doubleBuffer.getWidth()), height(doubleBuffer.getHeight()), keysPressed(0)
 {
@@ -25,6 +24,10 @@ WindowManager::WindowManager(DoubleBuffer &doubleBuffer) : doubleBuffer(doubleBu
 
     XSelectInput(display, window, StructureNotifyMask | KeyPressMask | KeyReleaseMask);
     XMapWindow(display, window);
+
+    Atom wmDelete = XInternAtom(display, "WM_DELETE_WINDOW", False);     // get the atom identifier for WM_DELETE_WINDOW (Alt-F4 or cross)
+    XSetWMProtocols(display, window, &wmDelete, 1);                      // register window manager protocol to get the delete message
+
     gc = XCreateGC(display, window, 0, NULL);
 
     for (;;)
@@ -80,6 +83,13 @@ void WindowManager::updateInput()
             break;
         case KeyRelease:
             keysPressed &= ~convertKey(XLookupKeysym(&e.xkey, 0));
+            break;
+        case ClientMessage:                                        // handle window destroyed
+            if ((Atom)e.xclient.data.l[0] ==
+                XInternAtom(display, "WM_DELETE_WINDOW", False))
+            {
+                keysPressed |= KEY_ESC;                            // esc will break the loop in main and then call thread.join
+            }
             break;
         }
     }

@@ -51,7 +51,7 @@ ProgramArguments parseArgs(int argc, char *argv[])
 
 void signalHandler(int) {     // signal handler to join the display_thread when we Ctrl-c  
     running = false;          // we don't exit immediately
-    }
+}
 
 int main(int argc, char *argv[])
 {

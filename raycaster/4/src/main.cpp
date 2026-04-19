@@ -1,7 +1,12 @@
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <csignal>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 #include <Average.h>
 #include <Player.h>
@@ -12,6 +17,13 @@
 #include <UDPSender.h>
 #include <DoubleBuffer.h>
 #include <util.h>
+
+std::thread send_position;
+std::atomic<bool> running(true);
+
+std::mutex cv_mutex;
+std::condition_variable cv;
+bool player_moved = false;
 
 struct ProgramArguments
 {
@@ -37,6 +49,10 @@ ProgramArguments parseArgs(int argc, char *argv[])
     args.screenHeight = std::stoi(argv[2]);
     args.ipsPath = argc == 4 ? argv[3] : "";
     return args;
+}
+
+void signalHandler(int) {     // signal handler to join the display_thread when we Ctrl-c  
+    running = false;          // we don't exit immediately
 }
 
 int main(int argc, char *argv[])
@@ -66,6 +82,31 @@ int main(int argc, char *argv[])
 
     Average fpsCounter(1.0);
 
+    if (signal(SIGINT, signalHandler) == SIG_ERR) {     // Install the signal handler
+        std::cerr << "Signal error" << std::endl;
+    }
+
+    // Send position to other players
+    send_position = std::thread([&udpSenders, &player] () {
+        while (true) {
+            std::unique_lock<std::mutex> lock(cv_mutex);        // unique_lock because cv needs a controllable mutex
+
+            cv.wait(lock, [] { return player_moved || !running ; });        // don't wait if running is false
+
+            player_moved = false;
+
+            double x = player.posX();
+            double y = player.posY();
+
+            lock.unlock();                                // unlock before the network operation
+
+            if (!running) break;
+
+            for (auto &udpSender : udpSenders)
+                udpSender->send(x, y);
+        }
+    });
+
     while (true)
     {
         raycaster.castFloorCeiling();
@@ -85,21 +126,38 @@ int main(int argc, char *argv[])
         windowManager.updateDisplay();
         windowManager.updateInput();
 
+        bool moved = false;
         unsigned int keys = windowManager.getKeysPressed();
-        if (keys & WindowManager::KEY_UP)
+        if (keys & WindowManager::KEY_UP) {
             player.move(frameTime);
-        if (keys & WindowManager::KEY_DOWN)
+            moved = true;
+        }
+        if (keys & WindowManager::KEY_DOWN) {
             player.move(-frameTime);
-        if (keys & WindowManager::KEY_RIGHT)
+            moved = true;
+        }
+        if (keys & WindowManager::KEY_RIGHT) {
             player.turn(-frameTime);
-        if (keys & WindowManager::KEY_LEFT)
+        }
+        if (keys & WindowManager::KEY_LEFT) {
             player.turn(frameTime);
-        if (keys & WindowManager::KEY_ESC)
-            break;
+        }
+        if (keys & WindowManager::KEY_ESC) {
+            running = false;
+        }
 
-        // Send position to other players
-        for (auto &udpSender : udpSenders)
-            udpSender->send(player.posX(), player.posY());
+        if (moved) {
+            {
+                std::lock_guard<std::mutex> lock(cv_mutex);
+                player_moved = true;
+            }
+            cv.notify_one();
+        }
+        
+        if (!running) {
+            cv.notify_one();
+            break;
+        }
 
         // Receive other players' positions and update them
         for (size_t i = 0; i < nbPlayers; i++)
@@ -117,4 +175,5 @@ int main(int argc, char *argv[])
             map.movePlayer(index, data.position.x(), data.position.y());
         }
     }
+    send_position.join();
 }
